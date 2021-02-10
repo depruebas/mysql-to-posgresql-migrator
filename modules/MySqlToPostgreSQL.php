@@ -3,20 +3,17 @@
 class MySqlToPostgreSQL extends CommonClass
 {
 
-	private $connection_mysql = null;
-	private $connection_pgsql = null;
 
-
-	private function SaveSequence( $data)
+	private function SaveSequence( $data_sequence)
 	{
 
-		$tabla = $data['tabla'];
-		$sequence_name = $data['tabla']."_id_seq";
+		$tabla = $data_sequence['tabla'];
+		$sequence_name = $data_sequence['tabla']."_id_seq";
 
 		$sequence = "
 			CREATE SEQUENCE public.".$sequence_name."
 		    INCREMENT 1
-		    START ".$data['last_id']."
+		    START ".$data_sequence['last_id']."
 		    MINVALUE 1
 		    MAXVALUE 2147483647
 		    CACHE 1;
@@ -76,7 +73,7 @@ class MySqlToPostgreSQL extends CommonClass
 
 
 		$_config = ConfigClass::get("config.database")['mysql'];
-		$this->connection_mysql = $this->GenericConnection( $_config);
+		$connection_mysql = $this->GenericConnection( $_config);
 
 
   	$mysql_types = ConfigClass::get("equivalences.mysql_to_postgres");
@@ -85,26 +82,26 @@ class MySqlToPostgreSQL extends CommonClass
   	$params['query'] = "SHOW Tables";
     $params['params'] = array();
 
-    $rows_tables = PDOClass2::ExecuteQuery( $params, $this->connection_mysql);
-
-
+    $rows_tables = PDOClass2::ExecuteQuery( $params, $connection_mysql);
 
     $schema_table = "";
-    foreach ( $rows_tables['data'] as $table)
+    foreach ( $rows_tables['data'] as $key => $table)
     {
 
-    	$data['tabla'] = $table['Tables_in_RMARKS'];
+			$table_one = implode( "", $table);
 
+    	$tables_in = $table_one;
 
-    	$params_fields['query'] = "DESCRIBE " . $data['tabla'];
+    	//$data['tabla'] = $tables_in;
+
+    	$params_fields['query'] = "DESCRIBE " . $tables_in;
 	    $params_fields['params'] = array();
 
 
+	    $rows_fields = PDOClass2::ExecuteQuery( $params_fields, $connection_mysql);
 
-	    $rows_fields = PDOClass2::ExecuteQuery( $params_fields, $this->connection_mysql);
 
-
-	    $schema_table = "CREATE TABLE public.".$table['Tables_in_RMARKS']." (";
+	    $schema_table = "CREATE TABLE public.".$tables_in." (";
 	    foreach ($rows_fields['data'] as $field)
 	    {
 
@@ -116,20 +113,27 @@ class MySqlToPostgreSQL extends CommonClass
 	    		# Get las auto_increment value
 	    		$params_auto['query'] = "SELECT AUTO_INCREMENT FROM information_schema.tables
 	    													WHERE table_name = ? AND table_schema = ?";
-			    $params_auto['params'] = array( $data['tabla'], $_config['dbname']);
+			    $params_auto['params'] = array( $tables_in, $_config['dbname']);
 
-			    $rows_auto = PDOClass2::ExecuteQuery( $params_auto, $this->connection_mysql);
+			    $rows_auto = PDOClass2::ExecuteQuery( $params_auto, $connection_mysql);
 
-			    $data['last_id'] = $rows_auto['data'][0]['AUTO_INCREMENT'];
+			    $data_sequence['last_id'] = $rows_auto['data'][0]['AUTO_INCREMENT'];
+			    $data_sequence['tabla'] =  $tables_in;
 
-					$this->SaveSequence( $data);
+					$this->SaveSequence( $data_sequence);
 
+	    	}
+
+	    	if ( substr( $field['Type'], 0, 3) == 'int')
+	    	{
+	    		$field['Type'] = 'int';
 	    	}
 
 	    	if ( substr( $field['Type'], 0, 7) == 'varchar')
 	    	{
 	    		$field['Type'] = 'varchar';
 	    	}
+
 
 	    	if ( $field['Null'] == 'NO' )
 	    	{
@@ -158,22 +162,24 @@ class MySqlToPostgreSQL extends CommonClass
 	    $schema_table .= ");";
 
 
-	 		file_put_contents(  ConfigClass::get("config.ruta_logs")['tables'] . $table['Tables_in_RMARKS'] . ".sql", $schema_table);
+	 		file_put_contents(  ConfigClass::get("config.ruta_logs")['tables'] . $tables_in . ".sql", $schema_table);
 
-	    echo "Create table: " . $table['Tables_in_RMARKS'] . EOF;
+	    echo "Create table: " . $tables_in . EOF;
 
 	    # Execute sql scripts
 	    #
-	    $file_inserts = ConfigClass::get("config.ruta_logs")['data'] .  $table['Tables_in_RMARKS'] . ".sql";
+	    $file_inserts = ConfigClass::get("config.ruta_logs")['data'] .  $tables_in . ".sql";
 
 
-			$file_dump = "mysqldump -h " . $_config['hostname'] . " -u " . $_config['username'] . " -p" . $_config['password'] . " --no-create-db --no-create-info --compact --skip-quote-names --default-character-set=utf8mb4 " . $_config['dbname'] . " " . $table['Tables_in_RMARKS'] . " > " . $file_inserts;
+			$file_dump = "mysqldump -h " . $_config['hostname'] . " -u " . $_config['username'] . " -p" . $_config['password'] . " --no-create-db --no-create-info --compact --skip-quote-names --default-character-set=utf8mb4 " . $_config['dbname'] . " " . $tables_in . " > " . $file_inserts;
 
 
 			exec( $file_dump, $output);
 
 
-		  echo "Export data from table: " . $table['Tables_in_RMARKS'] . EOF;
+		  echo "Export data from table: " . $tables_in . EOF;
+
+
 
     }
 
@@ -192,14 +198,14 @@ class MySqlToPostgreSQL extends CommonClass
 	  {
 
 	  	$_config_pg = ConfigClass::get("config.database")['postgres'];
-			$this->connection_pgsql = $this->GenericConnection( $_config_pg);
+			$connection_pgsql = $this->GenericConnection( $_config_pg);
 
 
 			# looking for an existing database name
 	  	$params_dbname['query'] = "SELECT datname FROM pg_database WHERE datname = ? ";
 	  	$params_dbname['params'] = array( $_config_pg['dbname']);
 
-	  	$rows_dbname = PDOClass2::ExecuteQuery( $params_dbname, $this->connection_pgsql);
+	  	$rows_dbname = PDOClass2::ExecuteQuery( $params_dbname, $connection_pgsql);
 
 
 			if ( empty( $rows_dbname['data']))
@@ -207,12 +213,13 @@ class MySqlToPostgreSQL extends CommonClass
 				$params_create_db['query'] = "CREATE DATABASE " . $_config_pg['dbname'] . ";";
 		    $params_create_db['params'] = array();
 
-		    $return = PDOClass2::Execute( $params_create_db, $this->connection_pgsql);
+		    $return = PDOClass2::Execute( $params_create_db, $connection_pgsql);
 			}
 
 			# Create tables
 			#
 			$files_tables = scandir('./output/tables/');
+
 
 	    foreach($files_tables as  $value)
 	    {
@@ -226,7 +233,7 @@ class MySqlToPostgreSQL extends CommonClass
 		    	$params_t['query'] = $file;
 			    $params_t['params'] = array();
 
-			    $return = PDOClass2::Execute( $params_t, $this->connection_pgsql);
+			    $return = PDOClass2::Execute( $params_t, $connection_pgsql);
 
 
 			    if ( $return['success'] == "1")
@@ -260,7 +267,7 @@ class MySqlToPostgreSQL extends CommonClass
 			    $params_data['params'] = array();
 
 
-			    $return = PDOClass2::Execute( $params_data, $this->connection_pgsql);
+			    $return = PDOClass2::Execute( $params_data, $connection_pgsql);
 
 	    		echo "Insert data into table: " . $table_data . EOF;
 
@@ -291,7 +298,7 @@ class MySqlToPostgreSQL extends CommonClass
 							$params_sq['query'] = trim( $seq);
 			    		$params_sq['params'] = array();
 
-			    		$return = PDOClass2::Execute( $params_sq, $this->connection_pgsql);
+			    		$return = PDOClass2::Execute( $params_sq, $connection_pgsql);
 
 			    		echo "Create  sequence: " . $seq . EOF;
 						}
@@ -303,6 +310,8 @@ class MySqlToPostgreSQL extends CommonClass
 
 	    }
 
+
+	    echo EOF . "End migration data " . EOF . EOF;
 
 	  }
 	  else
@@ -321,58 +330,10 @@ class MySqlToPostgreSQL extends CommonClass
 
 	  }
 
-	}
-
-
-
-	public function AAA()
-	{
-
-		$_config = ConfigClass::get("config.database")['postgres'];
-		$conn_arr = PDOClass2::Connection( $_config);
-
-  	if ( $conn_arr['success'] == true)
-  	{
-  		$this->connection_pgsql =  $conn_arr['data'];
-  	}
-  	else
-  	{
-  		throw new Exception("Error Processing connection_pgsql", 1);
-  	}
-
-		$files_sequences = scandir('./output/sequences/');
-
-    foreach($files_sequences as  $value)
-    {
-
-    	if ( $value != '.' And $value != '..')
-    	{
-
-	    	$file = file_get_contents( "./output/sequences/" . $value);
-
-	    	$file_array = explode( ";", $file);
-
-				foreach ( $file_array as $seq)
-				{
-					print_r( $seq);
-					if ( trim( $seq) != "")
-					{
-
-						$params_sq['query'] = trim( $seq);
-		    		$params_sq['params'] = array();
-
-		    		$return = PDOClass2::Execute( $params_sq, $this->connection_pgsql);
-
-					}
-				}
-
-		    print_r( json_encode( $return) . EOF);
-
-    	}
-
-    }
+	  echo EOF . "The End." . EOF . EOF;
 
 	}
+
 
 
 }

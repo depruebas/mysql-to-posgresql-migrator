@@ -17,7 +17,7 @@ When the script is executed, it creates the migration files in the directories:
 Sequences start at the last MySql autoincrement value
 
 If the parameter 'import_sql = true' exists, the scripts will be executed in postgreSQL.
-If this parameter does not exist or is false, the scripts are not executed and the migration will have to be carried out by hand, executing the scripts one by one.
+If this parameter does not exist or it's false, the scripts are not executed and the migration will have to be run manually, executing the scripts one by one.
 
 <h3>Script configuration</h3>
 
@@ -42,6 +42,8 @@ In the file <b>config/config.php</b> is the configuration of the databases and t
 ),
 </pre></code>
 The database on the postgreSQL server must exist for all the migration to be carried out automatically and the database must be called as the parameter <b>'dbname' => 'PRUEBAS'</b>, in this case it would be called tests.
+
+The file where all the migration logic it's in <b>modules/MySqlToPostgreSQL.php</b> so that you can check it.
 
 
 

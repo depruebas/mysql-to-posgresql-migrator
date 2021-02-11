@@ -242,7 +242,7 @@ class MySqlToPostgreSQL extends CommonClass
 			    }
 			    else
 			    {
-			    	die( "Error creating table " . $value . " - " . $return['data']['errormsg']);
+			    	echo ( "Error creating table " . $value . " - " . $return['data']['errormsg']);
 			    }
 
 	    	}

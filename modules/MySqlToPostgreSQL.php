@@ -218,7 +218,7 @@ class MySqlToPostgreSQL extends CommonClass
 
 			# Create tables
 			#
-			$files_tables = scandir('./output/tables/');
+			$files_tables = scandir(ConfigClass::get("config.ruta_logs")['tables']);
 
 
 	    foreach($files_tables as  $value)
@@ -228,7 +228,7 @@ class MySqlToPostgreSQL extends CommonClass
 	    	{
 
 
-		    	$file = file_get_contents( "./output/tables/" . $value);
+		    	$file = file_get_contents(ConfigClass::get("config.ruta_logs")['tables'] . $value);
 
 		    	$params_t['query'] = $file;
 			    $params_t['params'] = array();
@@ -251,7 +251,7 @@ class MySqlToPostgreSQL extends CommonClass
 
 	    # Insert data
 	    #
-	    $files_data = scandir('./output/data/');
+	    $files_data = scandir(ConfigClass::get("config.ruta_logs")['data']);
 
 	    foreach($files_data as  $table_data)
 	    {
@@ -259,7 +259,7 @@ class MySqlToPostgreSQL extends CommonClass
 	    	if ( $table_data != '.' And $table_data != '..')
 	    	{
 
-	    		$file_data = file_get_contents( "./output/data/" . $table_data);
+	    		$file_data = file_get_contents( ConfigClass::get("config.ruta_logs")['data'] . $table_data);
 
 	    		$file_data = str_replace( "\'", "''", $file_data);
 
@@ -277,7 +277,7 @@ class MySqlToPostgreSQL extends CommonClass
 
 
 	    ## Import sequences
-	    $files_sequences = scandir('./output/sequences/');
+	    $files_sequences = scandir(ConfigClass::get("config.ruta_logs")['sequences']);
 
 	    foreach($files_sequences as  $value_sequence)
 	    {
@@ -285,7 +285,7 @@ class MySqlToPostgreSQL extends CommonClass
 	    	if ( $value_sequence != '.' And $value_sequence != '..')
 	    	{
 
-		    	$file_sequences = file_get_contents( "./output/sequences/" . $value_sequence);
+		    	$file_sequences = file_get_contents( ConfigClass::get("config.ruta_logs")['sequences'] . $value_sequence);
 
 		    	$file_array = explode( ";", $file_sequences);
 

@@ -11,6 +11,7 @@ Create directories
 
 Needs MySql Client
 sudo apt install mysql-client
+<br>
 
 <h3>How to run the script</h3>
 

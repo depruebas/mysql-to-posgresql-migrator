@@ -1,5 +1,7 @@
 # mysql-to-posgresql-migrator
 Script to migrate MySql database to postgreSQL database
+<br><br>
+spanish article https://www.netveloper.com/migrar-una-base-de-datos-de-mysql-a-postgresql
 
 <h3>Requeriments</h3>
 Create directories

@@ -43,8 +43,11 @@ class MySqlToPostgreSQL extends CommonClass
   	}
   	else
   	{
-  		throw new Exception("Error Processing connection: " . $config['dsn'], 1);
+  		throw new Exception("Database '" . $config['dbname'] . "' not exists - Error Processing connection: " . $config['dsn'], 1);
   		die;
+
+  		# Not exists database
+
   	}
 
 	}
@@ -202,7 +205,7 @@ class MySqlToPostgreSQL extends CommonClass
 
 
 			# looking for an existing database name
-	  	$params_dbname['query'] = "SELECT datname FROM pg_database WHERE datname = ? ";
+	  	/*$params_dbname['query'] = "SELECT datname FROM pg_database WHERE datname = ? ";
 	  	$params_dbname['params'] = array( $_config_pg['dbname']);
 
 	  	$rows_dbname = PDOClass2::ExecuteQuery( $params_dbname, $connection_pgsql);
@@ -214,7 +217,7 @@ class MySqlToPostgreSQL extends CommonClass
 		    $params_create_db['params'] = array();
 
 		    $return = PDOClass2::Execute( $params_create_db, $connection_pgsql);
-			}
+			}*/
 
 			# Create tables
 			#
@@ -259,17 +262,24 @@ class MySqlToPostgreSQL extends CommonClass
 	    	if ( $table_data != '.' And $table_data != '..')
 	    	{
 
-	    		$file_data = file_get_contents( ConfigClass::get("config.ruta_logs")['data'] . $table_data);
+	    		try
+	    		{
+	    			$file_data = file_get_contents( ConfigClass::get("config.ruta_logs")['data'] . $table_data);
 
-	    		$file_data = str_replace( "\'", "''", $file_data);
+		    		$file_data = str_replace( "\'", "''", $file_data);
 
-	    		$params_data['query'] = $file_data;
-			    $params_data['params'] = array();
+		    		$params_data['query'] = $file_data;
+				    $params_data['params'] = array();
 
 
-			    $return = PDOClass2::Execute( $params_data, $connection_pgsql);
+				    $return = PDOClass2::Execute( $params_data, $connection_pgsql);
 
-	    		echo "Insert data into table: " . $table_data . EOF;
+		    		echo "Insert data into table: " . $table_data . EOF;
+	    		}
+	    		catch ( Exception $e)
+	    		{
+	    			print_r( $e);
+	    		}
 
 	    	}
 

@@ -10,8 +10,10 @@ Create directories
 </ul>
 
 Needs MySql Client
-sudo apt install mysql-client
-<br>
+<pre>
+<code>sudo apt install mysql-client
+</code>
+</pre>
 
 <h3>How to run the script</h3>
 

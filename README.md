@@ -1,6 +1,17 @@
 # mysql-to-posgresql-migrator
 Script to migrate MySql database to postgreSQL database
 
+<h3>Requeriments</h3>
+Create directories
+<ul>
+<li><b>mkdir output/data -p</b> for data files
+<li><b>mkdir output/tables -p</b> for table scripts
+<li><b>mkdir output/sequences -p</b> for the sequence scripts
+</ul>
+
+Needs MySql Client
+sudo apt install mysql-client
+
 <h3>How to run the script</h3>
 
 <pre>

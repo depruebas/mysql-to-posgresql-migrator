@@ -9,6 +9,8 @@ Create directories
 <li><b>mkdir output/sequences -p</b> for the sequence scripts
 </ul>
 
+Needs database in postgreSQL created
+
 Needs MySql Client
 <pre>
 <code>sudo apt install mysql-client

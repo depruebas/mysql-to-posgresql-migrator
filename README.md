@@ -61,6 +61,8 @@ In the file <b>config/config.php</b> is the configuration of the databases and t
 </pre></code>
 The database on the postgreSQL server must exist for all the migration to be carried out automatically and the database must be called as the parameter <b>'dbname' => 'PRUEBAS'</b>, in this case it would be called tests.
 
+The database name in dsn string has to be the same as <b>dbname</b> parameter
+
 The file where all the migration logic it's in <b>modules/MySqlToPostgreSQL.php</b> so that you can check it.
 
 

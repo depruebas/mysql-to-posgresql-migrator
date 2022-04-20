@@ -50,7 +50,7 @@
   $_class = trim( $argv[1]);
   $_method = trim( $argv[2]);
 
-  ( isset( $argv[3]) ? $data[] = $argv[3] : $data = array());
+  ( isset( $argv[3]) ? $data[] = $argv[3] : $data = []);
 
   # Cargamos la clase (fichero) que vamos a utilizar dinamicamente
   $class_include = dirname(__FILE__)."/modules/".$_class.".php";
@@ -69,12 +69,12 @@
   else
   {
 
-    return ( MessagesClass::Response( array(
+    return ( MessagesClass::Response( [
         'success' => false,
         'type' => 'ERROR',
         'code' => RandomString(),
         'message' => "Clase " . $class_include . " no existe",
-      )
+      ]
     ));
 
   }

@@ -12,8 +12,8 @@ class CustomErrorLog
 
     $this->pathLogs = ConfigClass::get("config.ruta_logs")['error_log'];
 
-    set_error_handler( array( &$this, 'customError'), E_ALL | E_STRICT);
-    register_shutdown_function( array( &$this, 'CatchFatalError'));
+    set_error_handler( [ &$this, 'customError'], E_ALL | E_STRICT);
+    register_shutdown_function( [ &$this, 'CatchFatalError']);
 
   }
 

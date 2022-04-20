@@ -1,9 +1,9 @@
 <?php
 
 
-	return array(
+	return [
 
-    'mysql_to_postgres' => array(
+    'mysql_to_postgres' => [
       'int' => 'integer',
       'smallint' => 'smallint',
       'bigint' => 'bigint',
@@ -14,6 +14,6 @@
       'datetime' => 'timestamp',
       'timestamp' => 'timestamp',
       'text' => 'text',
-    ),
+    ],
 
-	);
+  ];

@@ -53,7 +53,7 @@ class MySqlToPostgreSQL extends CommonClass
 	}
 
 
-	public function Init( $data = array())
+	public function Init( $data = [])
 	{
 
 		$params = explode( " ", $data[0]);
@@ -83,7 +83,7 @@ class MySqlToPostgreSQL extends CommonClass
 
 
   	$params['query'] = "SHOW Tables";
-    $params['params'] = array();
+    $params['params'] = [];
 
     $rows_tables = PDOClass2::ExecuteQuery( $params, $connection_mysql);
 
@@ -98,7 +98,7 @@ class MySqlToPostgreSQL extends CommonClass
     	//$data['tabla'] = $tables_in;
 
     	$params_fields['query'] = "DESCRIBE " . $tables_in;
-	    $params_fields['params'] = array();
+	    $params_fields['params'] = [];
 
 
 	    $rows_fields = PDOClass2::ExecuteQuery( $params_fields, $connection_mysql);
@@ -116,7 +116,7 @@ class MySqlToPostgreSQL extends CommonClass
 	    		# Get las auto_increment value
 	    		$params_auto['query'] = "SELECT AUTO_INCREMENT FROM information_schema.tables
 	    													WHERE table_name = ? AND table_schema = ?";
-			    $params_auto['params'] = array( $tables_in, $_config['dbname']);
+			    $params_auto['params'] = [ $tables_in, $_config['dbname']];
 
 			    $rows_auto = PDOClass2::ExecuteQuery( $params_auto, $connection_mysql);
 
@@ -203,22 +203,6 @@ class MySqlToPostgreSQL extends CommonClass
 	  	$_config_pg = ConfigClass::get("config.database")['postgres'];
 			$connection_pgsql = $this->GenericConnection( $_config_pg);
 
-
-			# looking for an existing database name
-	  	/*$params_dbname['query'] = "SELECT datname FROM pg_database WHERE datname = ? ";
-	  	$params_dbname['params'] = array( $_config_pg['dbname']);
-
-	  	$rows_dbname = PDOClass2::ExecuteQuery( $params_dbname, $connection_pgsql);
-
-
-			if ( empty( $rows_dbname['data']))
-			{
-				$params_create_db['query'] = "CREATE DATABASE " . $_config_pg['dbname'] . ";";
-		    $params_create_db['params'] = array();
-
-		    $return = PDOClass2::Execute( $params_create_db, $connection_pgsql);
-			}*/
-
 			# Create tables
 			#
 			$files_tables = scandir(ConfigClass::get("config.ruta_logs")['tables']);
@@ -234,7 +218,7 @@ class MySqlToPostgreSQL extends CommonClass
 		    	$file = file_get_contents(ConfigClass::get("config.ruta_logs")['tables'] . $value);
 
 		    	$params_t['query'] = $file;
-			    $params_t['params'] = array();
+			    $params_t['params'] = [];
 
 			    $return = PDOClass2::Execute( $params_t, $connection_pgsql);
 
@@ -269,7 +253,7 @@ class MySqlToPostgreSQL extends CommonClass
 		    		$file_data = str_replace( "\'", "''", $file_data);
 
 		    		$params_data['query'] = $file_data;
-				    $params_data['params'] = array();
+				    $params_data['params'] = [];
 
 
 				    $return = PDOClass2::Execute( $params_data, $connection_pgsql);
@@ -306,7 +290,7 @@ class MySqlToPostgreSQL extends CommonClass
 						{
 
 							$params_sq['query'] = trim( $seq);
-			    		$params_sq['params'] = array();
+			    		$params_sq['params'] = [];
 
 			    		$return = PDOClass2::Execute( $params_sq, $connection_pgsql);
 

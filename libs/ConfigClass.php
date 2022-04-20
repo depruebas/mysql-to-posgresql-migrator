@@ -6,7 +6,7 @@ class ConfigClass
 {
 
     # All of the items from the config file that is loaded
-    public static $items = array();
+    public static $items = [];
 
      # Loads the config file specified and sets $items to the array
     public static function load( $filepath)

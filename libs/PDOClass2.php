@@ -21,17 +21,17 @@ class PDOClass2
 
   }
 
-  public static function Connection( $config = array())
+  public static function Connection( $config = [])
   {
 
     if ( empty( $config))
     {
       error_log( date("Y-m-d H:i:s") . " - Config file empty \n", 3, static::$pathLogs."db_error.log");
-      $return = array(
+      $return = [
         'success' => false,
         'data' => 'Config file empty',
-      );
-      return ( array( 'success' => false, 'data' => $return));
+      ];
+      return ( [ 'success' => false, 'data' => $return]);
     }
 
     try
@@ -39,7 +39,7 @@ class PDOClass2
       $connection = new PDO( $config['dsn'], $config['username'], $config['password']);
       $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-      return ( array( 'success' => true, 'data' => $connection));
+      return ( [ 'success' => true, 'data' => $connection]);
 
     }
     catch (PDOException $e)
@@ -47,16 +47,16 @@ class PDOClass2
 
       $_error = print_r( $e->getTrace(), true) . "\n" . $e->getMessage();
 
-      $_error = array(
+      $_error = [
         'trace' => $e->getTrace(),
         'errormsg' => $e->getMessage(),
-      );
+      ];
 
       error_log( date("Y-m-d H:i:s") . " - " . print_r( $_error, true) . "\n", 3, static::$pathLogs."db_error.log");
-      $return = array(
+      $return = [
         'success' => false,
         'data' => $_error,
-      );
+      ];
 
       return ( $return);
     }
@@ -64,7 +64,7 @@ class PDOClass2
   }
 
 
-  public static function ExecuteQuery( $params = array(), $connection)
+  public static function ExecuteQuery( $params = [], $connection)
   {
 
    try
@@ -75,21 +75,21 @@ class PDOClass2
       $count = $stmt->rowCount();
       $stmt->closeCursor();
 
-      $return = array( 'success' => true, 'data' => $data, 'count' => $count);
+      $return = [ 'success' => true, 'data' => $data, 'count' => $count];
     }
     catch (PDOException $e)
     {
 
-      $_error = array(
+      $_error = [
         'trace' => $e->getTrace(),
         'errormsg' => $e->getMessage(),
-      );
+      ];
 
       error_log( date("Y-m-d H:i:s") . " - " . print_r( $_error, true) . "\n", 3, static::$pathLogs."db_error.log");
-      $return = array(
+      $return = [
         'success' => false,
         'data' => $_error,
-      );
+      ];
 
     }
 
@@ -98,7 +98,7 @@ class PDOClass2
     return ( $return);
   }
 
-  public static function Execute( $params = array(), $connection)
+  public static function Execute( $params = [], $connection)
   {
 
     try
@@ -107,22 +107,21 @@ class PDOClass2
       $stmt->execute( $params['params'] );
       $count = $stmt->rowCount();
 
-      $return = array( 'success' => true, 'count' => $count);
+      $return = [ 'success' => true, 'count' => $count];
     }
     catch (PDOException $e)
     {
 
-      //$_error = print_r( $e->getTrace(), true) . "\n" . print_r( array( 'ERRORMSG' => $e->getMessage()), true);
-      $_error = array(
+      $_error = [
         'trace' => $e->getTrace(),
         'errormsg' => $e->getMessage(),
-      );
+      ];
 
       error_log( date("Y-m-d H:i:s") . " - " . print_r( $_error, true) . "\n", 3, static::$pathLogs."db_error.log");
-      $return = array(
+      $return = [
         'success' => false,
         'data' => $_error,
-      );
+      ];
     }
 
     unset ( $stmt);
@@ -131,7 +130,7 @@ class PDOClass2
 
   }
 
-  public static function Insert( $params = array(), $connection)
+  public static function Insert( $params = [], $connection)
   {
 
     if ( empty( $connection))
@@ -140,7 +139,7 @@ class PDOClass2
       $connection = self::Connection( $config_db);
     }
 
-    $data = array();
+    $data = [];
     $fields = $fields_values = $a_values = "";
 
     foreach ( $params['fields'] as $key => $value)
@@ -165,22 +164,22 @@ class PDOClass2
       $count = $stmt->rowCount();
       $id = $connection->lastInsertId();
 
-      $return = array( 'success' => true, 'data' => $data, 'last_id' =>  $id, 'count' => $count);
+      $return = [ 'success' => true, 'data' => $data, 'last_id' =>  $id, 'count' => $count];
 
     }
     catch (PDOException $e)
     {
 
-      $_error = array(
+      $_error = [
         'trace' => $e->getTrace(),
         'errormsg' => $e->getMessage(),
-      );
+      ];
 
       error_log( date("Y-m-d H:i:s") . " - " . print_r( $_error, true) . "\n", 3, static::$pathLogs."db_error.log");
-      $return = array(
+      $return = [
         'success' => false,
         'data' => $_error,
-      );
+      ];
 
     }
 

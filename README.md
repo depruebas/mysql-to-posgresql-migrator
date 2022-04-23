@@ -21,6 +21,7 @@ Needs MySql Client
 Execute script with user <b>root</b> because need change permission in <b>output/data</b> for the postgres user
 
 Need too, modify permision in <b>/etc/postgresql/12/main/pg_hba.conf</b> and create a new line same this 
+<br>
 <code>
   local   all             postgres_user                                   trust
 </code>

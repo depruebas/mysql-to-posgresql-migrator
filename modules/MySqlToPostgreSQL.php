@@ -171,18 +171,21 @@ class MySqlToPostgreSQL extends CommonClass
 
 	    # Execute sql scripts
 	    #
-	    $file_inserts = ConfigClass::get("config.ruta_logs")['data'] .  $tables_in . ".sql";
+	    $file_inserts = ConfigClass::get("config.ruta_logs")['data'] .  $tables_in . ".csv";
 
 
-			$file_dump = "mysqldump -h " . $_config['hostname'] . " -u " . $_config['username'] . " -p" . $_config['password'] . " --no-create-db --no-create-info --compact --skip-quote-names --default-character-set=utf8mb4 " . $_config['dbname'] . " " . $tables_in . " > " . $file_inserts;
+			$file_dump = "mysql -u " . $_config['username'] . " -p" . $_config['password'] . " " . $_config['dbname'] . " -e \"SELECT * FROM " .  $tables_in . " INTO OUTFILE '/tmp/" .  $tables_in . ".csv' CHARACTER SET utf8 FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n'\" ";
 
+			//$file_dump = "mysqldump -h " . $_config['hostname'] . " -u " . $_config['username'] . " -p" . $_config['password'] . " --no-create-db --no-create-info --compact --skip-quote-names --default-character-set=utf8mb4 " . $_config['dbname'] . " " . $tables_in . " > " . $file_inserts ;
 
 			exec( $file_dump, $output);
+			
+			exec( "mv /tmp/". $tables_in . ".csv " . $file_inserts);
 
-
+			exec( "chown postgres.postgres " . $file_inserts, $output2);
+			
+				
 		  echo "Export data from table: " . $tables_in . EOF;
-
-
 
     }
 
@@ -229,7 +232,7 @@ class MySqlToPostgreSQL extends CommonClass
 			    }
 			    else
 			    {
-			    	echo ( "Error creating table " . $value . " - " . $return['data']['errormsg']);
+			    	echo ( "Error creating table " . $value . " - " . $return['data']['errormsg'] . EOF);
 			    }
 
 	    	}
@@ -248,21 +251,18 @@ class MySqlToPostgreSQL extends CommonClass
 
 	    		try
 	    		{
-	    			$file_data = file_get_contents( ConfigClass::get("config.ruta_logs")['data'] . $table_data);
+						$table_postgres = explode( ".", $table_data);
+						
+						$file_postgres = ConfigClass::get("config.ruta_logs")['data'] . $table_data;
 
-		    		$file_data = str_replace( "\'", "''", $file_data);
-
-		    		$params_data['query'] = $file_data;
-				    $params_data['params'] = [];
-
-
-				    $return = PDOClass2::Execute( $params_data, $connection_pgsql);
+						exec("PGPASSWORD=" . $_config_pg['password'] . " psql -U " . $_config_pg['username'] . " -d " . $_config_pg['dbname'] . " -c \"COPY ".$table_postgres[0]." FROM '".$file_postgres."'\"", $output_pg);
 
 		    		echo "Insert data into table: " . $table_data . EOF;
 	    		}
 	    		catch ( Exception $e)
 	    		{
 	    			print_r( $e);
+						echo EOF;
 	    		}
 
 	    	}
@@ -294,16 +294,11 @@ class MySqlToPostgreSQL extends CommonClass
 
 			    		$return = PDOClass2::Execute( $params_sq, $connection_pgsql);
 
-			    		echo "Create  sequence: " . $seq . EOF;
+			    		echo "Create  sequence: " . $value_sequence . EOF;
 						}
 					}
-
-			    //print_r( json_encode( $return) . EOF);
-
 	    	}
-
 	    }
-
 
 	    echo EOF . "End migration data " . EOF . EOF;
 
@@ -324,7 +319,7 @@ class MySqlToPostgreSQL extends CommonClass
 
 	  }
 
-	  echo EOF . "The End." . EOF . EOF;
+	  echo EOF . "And this is the End." . EOF;
 
 	}
 

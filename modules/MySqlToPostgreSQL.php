@@ -32,27 +32,6 @@ class MySqlToPostgreSQL extends CommonClass
 
 	}
 
-	private function GenericConnection( $config)
-	{
-
-		$conn_arr = PDOClass2::Connection( $config);
-
-  	if ( $conn_arr['success'] == true)
-  	{
-  		return( $conn_arr['data']);
-  	}
-  	else
-  	{
-  		throw new Exception("Database '" . $config['dbname'] . "' not exists - Error Processing connection: " . $config['dsn'], 1);
-  		die;
-
-  		# Not exists database
-
-  	}
-
-	}
-
-
 	public function Init( $data = [])
 	{
 
@@ -137,6 +116,10 @@ class MySqlToPostgreSQL extends CommonClass
 	    		$field['Type'] = 'varchar';
 	    	}
 
+				if ( substr( $field['Type'], 0, 8) == 'smallint')
+	    	{
+	    		$field['Type'] = 'int';
+	    	}
 
 	    	if ( $field['Null'] == 'NO' )
 	    	{

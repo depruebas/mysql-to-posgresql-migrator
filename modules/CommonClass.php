@@ -8,4 +8,24 @@
 class CommonClass
 {
 
+	protected function GenericConnection( $config)
+	{
+
+		$conn_arr = PDOClass2::Connection( $config);
+
+  	if ( $conn_arr['success'] == true)
+  	{
+  		return( $conn_arr['data']);
+  	}
+  	else
+  	{
+  		throw new Exception("Database '" . $config['dbname'] . "' not exists - Error Processing connection: " . $config['dsn'], 1);
+  		die;
+
+  		# Not exists database
+
+  	}
+
+	}
+
 }

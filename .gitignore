@@ -1,4 +1,5 @@
 config/config.php
+modules/Tests.php
 sql/
 samples-pg.sql
 deploy

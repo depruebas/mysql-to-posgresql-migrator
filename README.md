@@ -13,11 +13,8 @@ Create directories
 
 Needs database in postgreSQL created
 
-Needs MySql Client
-<pre>
-<code>sudo apt install mysql-client
-</code>
-</pre>
+Needs to executed in MySql Server because uses "INTO OUTFILE" and save files into /tmp directory
+
 Execute script with user <b>root</b> because need change permission in <b>output/data</b> for the postgres user
 
 Need too, modify permision in <b>/etc/postgresql/12/main/pg_hba.conf</b> and create a new line same this 

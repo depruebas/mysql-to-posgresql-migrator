@@ -5,6 +5,7 @@
 
     'mysql_to_postgres' => [
       'int' => 'integer',
+      'smallint' => 'integer',
       'smallint' => 'smallint',
       'bigint' => 'bigint',
       'bit' => 'bit',
